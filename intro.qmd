@@ -1,0 +1,42 @@
+---
+format: live-html
+webr:
+  engine: knitr
+  packages:
+    - gt
+    - medicaldata
+---
+
+
+# Introduction
+
+This quarto book, with the help of wasm and webr, allows you to edit and run code within live code chunks (a capability called quarto-live).
+
+Now it is your turn to write some code.
+
+Add some style and formatting to the gt table below. Replace the fairly generic `opt_stylize` function with your own style (though the six options for opt_stylize can get you started quickly).
+Look at some options either [here](https://gt.albert-rapp.de/formatting), or in the {gt} pakage webpage [here](https://gt.rstudio.com/reference/index.html). Experiment with the `fmt_` and the `cols_` families of functions.
+Note that you can change opt_stylize to styles 1-6, and the default colors include "blue", "cyan", "pink", "green", "red", or "gray"
+
+```{webr-r}
+scurvy <- medicaldata::scurvy
+scurvy |> 
+  gt() |> 
+  opt_stylize(style = 3, color = "red", add_row_striping = TRUE)
+```
+
+Consider renaming the columns, by adding code that looks a bit like this
+(pick your own favorite column names):
+
+```{r, eval=FALSE}
+|> 
+cols_label(treatment = "Rx",
+          dosing_regimen_for_scurvy = "Dose",
+           gum_rot_d6 = "Gum Rot",
+           skin_sores_d6 = "Skin Sores",
+           weakness_of_the_knees_d6 = "Weakness",
+           lassitude_d6 = "Lassitude",
+           fit_for_duty_d6 = "Fit")
+
+```
+

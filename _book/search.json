@@ -1,0 +1,62 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Reproducible Medical Research With R",
+    "section": "",
+    "text": "Preface\nThis is a Quarto book.\nTo learn more about Quarto books visit https://quarto.org/docs/books\nThis is a static code chunk, which runs the R code in the code chunk below, and lists the output after the code chunk.\n1 + 1\n\n[1] 2\nA Quarto live extension has been installed in this project. In this case, we are using coatless/webr, as it works for books, while rwasm/live does not yet work for books.\nThe documentation for Quarto Live can be read here.\nNote that to make live webr code chunks work with packages beyond base R, each chapter qmd document needs to have a yaml header that looks something like:\n---\nformat: live-html\nwebr:\n  engine: knitr\n  packages:\n    - tidyverse\n    - gt\n    - medicaldata\n---\nIn order to install the particular packages needed for that chapter for the use of the live code chunks.\nNote that this is separate from the setup code chunk, which loads packages for the static code chunks and for inline R code.\nThis will allow you to create live code chunks that you can edit and run, like the one below. Note that when you load a webpage with a live code chunk that loads packages, a black dot will flash at the top right of each code chunk (just to the left of the Run Code button) until all of the packages are loaded. Only then will you be able to run the live webr code chunks.\nAlso note that each live webr code chunk will start with {webr-r} rather than {r} for static code chunks.\nThe below is a live, or dynamic code chunk.\nCheck out the live webr code chunk in the next chapter (which does use packages beyond base R).",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "index.html#acknowledgements",
+    "href": "index.html#acknowledgements",
+    "title": "Reproducible Medical Research With R",
+    "section": "Acknowledgements",
+    "text": "Acknowledgements\nMany of the following chapters were inspired by blogposts, websites, and e-books that go into far greater depth on topics like modeling, mapping health data, data wrangling, etc. The end of many chapters includes a section on where to explore further. For many of these areas, this book is only an introduction.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "index.html#inspirations",
+    "href": "index.html#inspirations",
+    "title": "Reproducible Medical Research With R",
+    "section": "Inspirations",
+    "text": "Inspirations\nThe HealthyR book has been an inspiration, and the work of Ewen Harrison and Riinu Pius has been inspirational.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "index.html#thanks",
+    "href": "index.html#thanks",
+    "title": "Reproducible Medical Research With R",
+    "section": "Thanks",
+    "text": "Thanks",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "intro.html",
+    "href": "intro.html",
+    "title": "1  Introduction",
+    "section": "",
+    "text": "This quarto book, with the help of wasm and webr, allows you to edit and run code within live code chunks (a capability called quarto-live).\nNow it is your turn to write some code.\nAdd some style and formatting to the gt table below. Replace the fairly generic opt_stylize function with your own style (though the six options for opt_stylize can get you started quickly). Look at some options either here, or in the {gt} pakage webpage here. Experiment with the fmt_ and the cols_ families of functions. Note that you can change opt_stylize to styles 1-6, and the default colors include “blue”, “cyan”, “pink”, “green”, “red”, or “gray”\n\n\n\n\n\n\nConsider renaming the columns, by adding code that looks a bit like this (pick your own favorite column names):\n\n|&gt; \ncols_label(treatment = \"Rx\",\n          dosing_regimen_for_scurvy = \"Dose\",\n           gum_rot_d6 = \"Gum Rot\",\n           skin_sores_d6 = \"Skin Sores\",\n           weakness_of_the_knees_d6 = \"Weakness\",\n           lassitude_d6 = \"Lassitude\",\n           fit_for_duty_d6 = \"Fit\")",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "summary.html",
+    "href": "summary.html",
+    "title": "2  Wrangling data",
+    "section": "",
+    "text": "Filter the starwars dataset so that only the characters of the Droid species are included. You should get a six row list from C3PO to BB8. You may want to make the table prettier by piping it into gt() to make a gt table.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHint 1\n\n\n\n\n\nConsider using the filter() function from dplyr. Note that the species ‘Droid’ is capitalized.\n\n\n\n\n\n\n\n\n\n\n\nHint 2\n\n\n\n\n\nYou should filter the dataset using the species column. Remember to use “==” to test equality.\n\n\n\n\n\n\n\n\n\n\n\nFully worked solution:\n\n\n\n\n\nUse the filter() function from dplyr:\n1starwars |&gt;\n2    filter(species == \"Droid\") |&gt;\n3    gt()\n\n1\n\nTake the starwars dataset, and then,\n\n2\n\nFilter for the “Droid” species, and then\n\n3\n\nPipe into gt() for a cleaner, scrollable table",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Wrangling data</span>"
+    ]
+  }
+]

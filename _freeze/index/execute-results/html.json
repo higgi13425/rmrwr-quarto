@@ -1,0 +1,15 @@
+{
+  "hash": "4c7070d022222d9d3d3a7e6393fb7079",
+  "result": {
+    "engine": "knitr",
+    "markdown": "# Preface {.unnumbered}\n\n\nThis is a Quarto book.\n\nTo learn more about Quarto books visit <https://quarto.org/docs/books>\n\nThis is a static code chunk, which runs the R code in the code chunk below, and lists the output after the code chunk.\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n[1] 2\n```\n\n\n:::\n:::\n\n\n\n\nA Quarto live extension has been installed in this project. In this case, we are using `coatless/webr`, as it works for books, while `rwasm/live` does not yet work for books.\n\nThe documentation for Quarto Live can be read [here](https://github.com/r-wasm/quarto-live#readme).\n\nNote that to make live webr code chunks work with packages beyond base R, each chapter qmd document needs to have a yaml header that looks something like:\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\n---\nformat: live-html\nwebr:\n  engine: knitr\n  packages:\n    - tidyverse\n    - gt\n    - medicaldata\n---\n```\n:::\n\n\n\n\nIn order to install the particular packages needed for that chapter for the use of the live code chunks. \n\nNote that this is separate from the `setup` code chunk, which loads packages for the static code chunks and for inline R code.\n\nThis will allow you to create live code chunks that you can edit and run, like the one below.\nNote that when you load a webpage with a live code chunk that loads packages, a black dot will flash at the top right of each code chunk (just to the left of the `Run Code` button) until all of the packages are loaded. Only then will you be able to run the live webr code chunks.\n\nAlso note that each live webr code chunk will start with `{webr-r}` rather than `{r}` for static code chunks.\n\nThe below is a live, or dynamic code chunk.\n\n```{webr-r}\nfit = lm(mpg ~ am, data = mtcars)\nsummary(fit)\nplot(fit)\n```\n\nCheck out the live webr code chunk in the next chapter (which does use packages beyond base R).\n\n## Acknowledgements\nMany of the following chapters were inspired by blogposts, websites, and e-books that go into far greater depth on topics like modeling, mapping health data, data wrangling, etc. The end of many chapters includes a section on where to explore further. For many of these areas, this book is only an introduction.\n\n## Inspirations\nThe HealthyR book has been an inspiration, and the work of Ewen Harrison and Riinu Pius has been inspirational.\n\n## Thanks\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

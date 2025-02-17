@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: 1dbdb96c-affc-4fae-8ecb-704e1ffb0f6b
+      url: 'https://phiggins.quarto.pub/rmrwr-quarto'

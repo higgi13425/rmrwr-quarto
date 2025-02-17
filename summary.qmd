@@ -1,0 +1,62 @@
+---
+format: live-html
+title: Wrangling data
+webr:
+  engine: knitr
+  packages:
+    - dplyr
+    - medicaldata
+    - gt
+---
+
+Filter the `starwars` dataset so that only the characters of the Droid species are included.
+You should get a six row list from C3PO to BB8.
+You may want to make the table prettier by piping it into gt() to make a gt table.
+
+```{webr-r}
+#| setup: true
+#| exercise: ex_3
+library(dplyr)
+```
+
+```{webr-r}
+#| exercise: ex_3
+starwars |> ______
+```
+
+::: { .hint exercise="ex_3"}
+::: { .callout-note collapse="false"}
+## Hint 1
+
+Consider using the `filter()` function from `dplyr`. Note that the species 'Droid' is capitalized.
+
+:::
+:::
+
+::: { .hint exercise="ex_3"}
+::: { .callout-note collapse="false"}
+## Hint 2
+
+You should filter the dataset using the `species` column. Remember to use "==" to test equality.
+
+
+:::
+:::
+
+::: { .solution exercise="ex_3" }
+::: { .callout-tip collapse="false"}
+## Fully worked solution:
+
+Use the `filter()` function from `dplyr`:
+
+```r
+starwars |>                                 #<1>
+    filter(species == "Droid") |>           #<2>
+    gt()                                    #<3>
+```
+1. Take the `starwars` dataset, and then,
+2. Filter for the "Droid" species, and then
+3. Pipe into gt() for a cleaner, scrollable table
+
+:::
+:::

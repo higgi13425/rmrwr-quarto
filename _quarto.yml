@@ -1,0 +1,29 @@
+project:
+  type: book
+
+book:
+  title: "Reproducible Medical Research With R"
+  author: "Peter Higgins"
+  date: "1/27/2025"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - summary.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+execute:
+  freeze: true
+
+filters:
+  - webr
+engine: knitr
+
+format: live-html
+webr:
+  engine: knitr
+  packages:
+    - tidyverse
+    - gt
+    - medicaldata

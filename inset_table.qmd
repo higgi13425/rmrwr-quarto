@@ -1,0 +1,129 @@
+---
+format: live-html
+title: The Power of Patchwork
+webr:
+  engine: knitr
+  packages:
+    - dplyr
+    - ggplot2
+    - medicaldata
+    - gt
+    - patchwork
+---
+
+We will combine a table and a plot into a single graphic, using the {patchwork} 
+package.
+Let's start by loading in some data from {medicaldata}
+
+```{r}
+#| setup: true
+#| exercise: ex_3
+library(dplyr)
+library(medicaldata)
+library(gt)
+```
+We will  now create a summary table in gt
+that compares radiographic outcomes by arm
+from 1 = Death to 6 = Considerable improvement.
+3 = Moderate deterioration and 4 = No change
+
+This HTML table would show up in RStudio in the Viewer tab.
+
+```{r}
+d <- medicaldata::strep_tb 
+d |> select(arm, rad_num) |> 
+  group_by(arm) |> 
+  summarize(rad6m = mean(rad_num),
+            sd = sd(rad_num)) |> 
+  gt::gt() ->t1
+t1
+```
+
+Now let's convert this table into a gtable object
+composed of 11 grobs (graphical objects), which you can see in the Console.
+Notice that you now have to plot it to make it show up,
+amd in RStudio it would show up (by default) centered in the Plots tab.
+
+```{r}
+library(gtable)
+gt1 <- t1 |> as_gtable()
+gt1
+plot(gt1)
+```
+
+Now we will make our plot,
+which will show up in RStudio in the Plots tab.
+Run the code below to get the plot.
+We use `expand_limits` in ggplot to make extra room for the table.
+The Streptomycin column is 1, and the Control column is 2.
+We are expanding to add empty columns 3 and 4.
+Run the code with the blue `Run Code` button, then 
+Turn off `expand_limits` with a hashtag to comment it out to see how this works,
+then Run the code again.
+Do you know what would happen if we used `geom_point`?
+Try it out in the code chunk below. Re-run the code.
+Click on the `Start Over` button to restore the code to its original state.
+
+```{webr-r}
+#| exercise: ex_1
+library(patchwork)
+library(ggplot2)
+d <- medicaldata::strep_tb 
+
+d |> 
+  ggplot(aes(x= arm, y = rad_num, color= baseline_cavitation)) +
+  geom_jitter(size = 3) +
+  labs(y = "Radiologic Score", x = "Study Arm",
+       title = "Radiologic Outcomes for TB by Treatment Arm",
+       subtitle = "colored by baseline cavitation, 4 = No Change") +
+  expand_limits(x = c(1,4)) +
+  theme_linedraw(base_size = 16) +
+  scale_color_manual(values = c("green", "black")) +
+  theme(legend.position = "top") ->
+  p1
+p1
+```
+
+Now insert the `gt1` graphical object table into the plot with the {patchwork} function, `inset_element`, using the code below at line 25 and beyond.
+The first 23 lines rebuild the table and plot objects.
+Run the code.
+The standard ggplot has the point 0,0 at bottom left, 
+and the point 1,1 at the top right.
+In the last part of the code chunk below, experiment with the location of the plot by
+changing the TRBL (pronounced 'trouble') parameters, then rerun the code.
+Also experiment with the alignment - options include 'full' and 'plot',
+and run the code, to
+see if you can figure out what the table is being aligned with for each option.
+
+```{webr-r}
+#| exercise: ex_2
+
+d <- medicaldata::strep_tb 
+
+d |> select(arm, rad_num) |> 
+  group_by(arm) |> 
+  summarize(rad6m = mean(rad_num),
+            sd = sd(rad_num)) |> 
+  gt::gt() |> 
+  as_gtable() ->
+gt1
+
+d |> 
+  ggplot(aes(x= arm, y = rad_num, color= baseline_cavitation)) +
+  geom_jitter(size = 3) +
+  labs(y = "Radiologic Score", x = "Study Arm",
+       title = "Radiologic Outcomes for TB by Treatment Arm",
+       subtitle = "colored by baseline cavitation, 4 = No Change") +
+  expand_limits(x = c(1,4)) +
+  theme_linedraw(base_size = 16) +
+  scale_color_manual(values = c("green", "black")) +
+  theme(legend.position = "top") ->
+  p1
+
+
+p1 +
+  inset_element(gt1, top= 0.6, right=0.9, bottom =0.4,left = 0.65, 
+                align_to = 'panel')
+```
+
+

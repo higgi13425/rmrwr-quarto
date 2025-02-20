@@ -8,7 +8,8 @@ book:
   chapters:
     - index.qmd
     - intro.qmd
-    - summary.qmd
+    - wrangle.qmd
+    - inset_table.qmd
     - references.qmd
 
 bibliography: references.bib

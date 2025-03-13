@@ -92,6 +92,9 @@ ranger <- function(vector) {
 }
 ```
 
+Run the function above until the black dot stops blinking. Then it should be an object in the Environment.
+At this point you should be able to call the function in the code chunk below.
+
 ```{webr}
 # Call the Function
 
@@ -101,4 +104,4 @@ ranger(vector)
 
 ```
 
-Experiment with changing the vector, and then calling the function again. Test that it works properly.
+Experiment with changing the extremes of the vector, and then calling the function again. Test that it works properly.

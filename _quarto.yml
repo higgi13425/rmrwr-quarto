@@ -10,6 +10,7 @@ book:
     - intro.qmd
     - wrangle.qmd
     - inset_table.qmd
+    - functions.qmd
     - references.qmd
 
 bibliography: references.bib

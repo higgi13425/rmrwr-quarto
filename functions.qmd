@@ -1,0 +1,104 @@
+---
+title: "Functions"
+
+format: live-html
+webr:
+  packages:
+    - dplyr
+    - palmerpenguins
+    - ggplot2
+---
+
+{{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
+
+## Functions
+
+R is a *functional* programming language. This means that functions are first-class objects in R, like dataframes or vectors. Functions can be assigned to variables, passed as arguments to other functions, and returned as values from other functions.
+
+A common acronym used in R programming is "DRY" for don't repeat yourself. If you find yourself using the same chunk of code repeatedly (cut, paste, edit), it is probably worth rewriting the code as a function.
+
+You can build your own functions in R using the `function` keyword. Here's a simple example that adds 2 to an input number:
+
+```{webr}
+# Write the Function
+
+add_two <- function(x) {
+  x + 2
+}
+```
+
+To use this, you can call the function with an argument:
+
+```{webr}
+# Call the function 
+
+add_two(3)
+```
+
+Experiment a bit with the code block above, and change the argument number to something different, then run it to get the result. It adapts to a new input, and runs the same function.
+
+You can even go back to the function block above, and change the what the function does to `add three` or `subtract two`. Be sure to run it again to save the new function before you run the function call in the lower block.
+
+A function has 3 (sort of 4) parts:
+
+-   the **name** of the function (in this case, `add_two`)
+
+-   The **formals**(), the list of arguments that control how you call the function. In the case of our simple function below, this is just `x`.
+
+-   The **body**(), all of the the code inside the function.
+
+-   The **environment**(), the data structure that determines how the function finds the values associated with the names. The environment is defined implicitly, rather than explicitly. The function will always look for values of the arguments (the formals) in the function call, or within the function itself. Only if it can not find these defined within the function call or the function, will it them search one level up (in the Global Environment) to see if you have a value for one of the arguments (like x).
+
+For the function below, think about:
+
+-   what is the name
+-   what is/are the formal arguments?
+-   what is the body?
+
+
+name: `square` formal <br>
+argument: `x` <br>
+body: `x ^2` <br>
+
+
+```{webr}
+# Write the Function
+
+square <- function(x) {
+  x ^ 2
+}
+```
+
+Run the code chunk above to create the `square` function in the Global Environment.
+
+Now try to call the `square` function in a new code block. Fill in an appropriate argument, then run it.
+
+```{webr}
+# Call the Function
+
+square(_)
+```
+
+Some functions generate intermediate results and final results, or may generate more than one piece of output. If this is the case, you may need more control of what is `returned` by the function. You can do this by combining the components into a vector, a dataframe, or a list, and then `return(x)` at the end of the body of your function, so that it does not just return the last result. Some people prefer to specify what is returned at the end of the body of each function, just to make it clear. Let's look at an example.
+
+```{webr}
+# Write the Function
+
+ranger <- function(vector) {
+  lo <- min(vector)
+  hi <- max(vector)
+  new_vec <- c(lo, hi)
+  return(new_vec)
+}
+```
+
+```{webr}
+# Call the Function
+
+vector <- c(2,4,7,9)
+
+ranger(vector)
+
+```
+
+Experiment with changing the vector, and then calling the function again. Test that it works properly.

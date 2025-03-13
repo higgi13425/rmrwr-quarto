@@ -30,12 +30,15 @@ from 1 = Death to 6 = Considerable improvement.
 This HTML table would show up in RStudio in the Viewer tab.
 
 ```{r}
-d <- medicaldata::strep_tb 
-d |> select(arm, rad_num) |> 
-  group_by(arm) |> 
-  summarize(rad6m = mean(rad_num),
-            sd = sd(rad_num)) |> 
-  gt::gt() ->t1
+d <- medicaldata::strep_tb
+d |>
+  select(arm, rad_num) |>
+  group_by(arm) |>
+  summarize(
+    rad6m = mean(rad_num),
+    sd = sd(rad_num)
+  ) |>
+  gt::gt() -> t1
 t1
 ```
 

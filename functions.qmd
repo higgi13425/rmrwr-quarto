@@ -41,7 +41,7 @@ You can even go back to the function block above, and change the what the functi
 
 A function has 3 (sort of 4) parts:
 
--   the **name** of the function (in this case, `add_two`)
+-   The **name** of the function (in this case, `add_two`)
 
 -   The **formals**(), the list of arguments that control how you call the function. In the case of our simple function below, this is just `x`.
 
@@ -56,8 +56,8 @@ For the function below, think about:
 -   what is the body?
 
 
-name: `square` formal <br>
-argument: `x` <br>
+name: `square` <br>
+formal argument: `x` <br>
 body: `x ^2` <br>
 
 

@@ -25,7 +25,9 @@ You can build your own functions in R using the `function` keyword. Here's a sim
 add_two <- function(x) {
   x + 2
 }
+print("function ready to use")
 ```
+Note that we added a print statement so that you know when the function is installed in the Environment. <br>
 
 To use this, you can call the function with an argument:
 
@@ -67,6 +69,7 @@ body: `x ^2` <br>
 square <- function(x) {
   x ^ 2
 }
+print("function ready to use")
 ```
 
 Run the code chunk above to create the `square` function in the Global Environment.
@@ -90,6 +93,7 @@ ranger <- function(vector) {
   new_vec <- c(lo, hi)
   return(new_vec)
 }
+print("function ready to use")
 ```
 
 Run the function above until the black dot stops blinking. Then it should be an object in the Environment.

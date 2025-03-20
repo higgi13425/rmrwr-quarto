@@ -11,6 +11,7 @@ book:
     - wrangle.qmd
     - inset_table.qmd
     - functions.qmd
+    - longitudinal.qmd
     - references.qmd
 
 bibliography: references.bib

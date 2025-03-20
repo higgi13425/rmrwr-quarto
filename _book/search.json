@@ -74,7 +74,7 @@
     "href": "functions.html",
     "title": "4  Functions",
     "section": "",
-    "text": "4.1 Functions\nR is a functional programming language. This means that functions are first-class objects in R, like dataframes or vectors. Functions can be assigned to variables, passed as arguments to other functions, and returned as values from other functions.\nA common acronym used in R programming is “DRY” for don’t repeat yourself. If you find yourself using the same chunk of code repeatedly (cut, paste, edit), it is probably worth rewriting the code as a function.\nYou can build your own functions in R using the function keyword. Here’s a simple example that adds 2 to an input number:\nTo use this, you can call the function with an argument:\nExperiment a bit with the code block above, and change the argument number to something different, then run it to get the result. It adapts to a new input, and runs the same function.\nYou can even go back to the function block above, and change the what the function does to add three or subtract two. Be sure to run it again to save the new function before you run the function call in the lower block.\nA function has 3 (sort of 4) parts:\nFor the function below, think about:\nname: square  formal argument: x  body: x ^2\nRun the code chunk above to create the square function in the Global Environment.\nNow try to call the square function in a new code block. Fill in an appropriate argument, then run it.\nSome functions generate intermediate results and final results, or may generate more than one piece of output. If this is the case, you may need more control of what is returned by the function. You can do this by combining the components into a vector, a dataframe, or a list, and then return(x) at the end of the body of your function, so that it does not just return the last result. Some people prefer to specify what is returned at the end of the body of each function, just to make it clear. Let’s look at an example.\nRun the function above until the black dot stops blinking. Then you should be able to call the function in the code chunk below.\nExperiment with changing the vector, and then calling the function again. Test that it works properly.",
+    "text": "4.1 Functions\nR is a functional programming language. This means that functions are first-class objects in R, like dataframes or vectors. Functions can be assigned to variables, passed as arguments to other functions, and returned as values from other functions.\nA common acronym used in R programming is “DRY” for don’t repeat yourself. If you find yourself using the same chunk of code repeatedly (cut, paste, edit), it is probably worth rewriting the code as a function.\nYou can build your own functions in R using the function keyword. Here’s a simple example that adds 2 to an input number:\nNote that we added a print statement so that you know when the function is installed in the Environment.\nTo use this, you can call the function with an argument:\nExperiment a bit with the code block above, and change the argument number to something different, then run it to get the result. It adapts to a new input, and runs the same function.\nYou can even go back to the function block above, and change the what the function does to add three or subtract two. Be sure to run it again to save the new function before you run the function call in the lower block.\nA function has 3 (sort of 4) parts:\nFor the function below, think about:\nname: square  formal argument: x  body: x ^2\nRun the code chunk above to create the square function in the Global Environment.\nNow try to call the square function in a new code block. Fill in an appropriate argument, then run it.\nSome functions generate intermediate results and final results, or may generate more than one piece of output. If this is the case, you may need more control of what is returned by the function. You can do this by combining the components into a vector, a dataframe, or a list, and then return(x) at the end of the body of your function, so that it does not just return the last result. Some people prefer to specify what is returned at the end of the body of each function, just to make it clear. Let’s look at an example.\nRun the function above until the black dot stops blinking. Then it should be an object in the Environment. At this point you should be able to call the function in the code chunk below.\nExperiment with changing the extremes of the vector, and then calling the function again. Test that it works properly.",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Functions</span>"
     ]
@@ -87,6 +87,56 @@
     "text": "The name of the function (in this case, add_two)\nThe formals(), the list of arguments that control how you call the function. In the case of our simple function below, this is just x.\nThe body(), all of the the code inside the function.\nThe environment(), the data structure that determines how the function finds the values associated with the names. The environment is defined implicitly, rather than explicitly. The function will always look for values of the arguments (the formals) in the function call, or within the function itself. Only if it can not find these defined within the function call or the function, will it them search one level up (in the Global Environment) to see if you have a value for one of the arguments (like x).\n\n\n\nwhat is the name\nwhat is/are the formal arguments?\nwhat is the body?",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Functions</span>"
+    ]
+  },
+  {
+    "objectID": "longitudinal.html",
+    "href": "longitudinal.html",
+    "title": "5  Longitudinal Data",
+    "section": "",
+    "text": "5.1 Longitudinal Data\nHealth care data, especially in administrative databases, are often longitudinal. This means that each patient has multiple encounters, each corresponding to a different time point. For example, a patient may have a encounter for each visit, each procedure, and multiple telephone and portal encounters. We often want to collect data from these encounters and summarize them in a way that is useful for analysis. For example, we may want to know how a patient responded after a change in therapy. If we can identify an index date when the change in therapy occurred, we can then collect data on measured outcomes at subsequent encounters. For this example, we will focus on blood pressure data, after an imaginary intervention with a new antihypertensive therapy.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
+    ]
+  },
+  {
+    "objectID": "longitudinal.html#data",
+    "href": "longitudinal.html#data",
+    "title": "5  Longitudinal Data",
+    "section": "5.2 Data",
+    "text": "5.2 Data\nHere is a look at the data. Each patient will start a new antihypertensive on January 1, 2020, and we will follow them over several months. Look at the data below. Each row represents a patient encounter, with the patient ID, the date of the encounter, and the systolic and diastolic blood pressure measurements.\n\noptions(tidyverse.quiet = TRUE)\nlibrary(tidyverse)\n\nbp_data &lt;- tibble::tribble(\n  ~pt_id, ~visit_date, ~sbp, ~dbp,\n  1, \"2020-01-01\", 145, 95,\n  1, \"2020-04-02\", 132, 88,\n  1, \"2020-07-03\", 116, 80,\n  2, \"2020-01-01\", 160, 105,\n  2, \"2020-04-02\", 152, 99,\n  2, \"2020-07-03\", 140, 85,\n  3, \"2020-01-01\", 162, 93,\n  3, \"2020-04-02\", 153, 88,\n  3, \"2020-07-03\", 139, 82,\n  4, \"2020-01-01\", 150, 95,\n  4, \"2020-04-02\", 143, 88,\n  4, \"2020-07-03\", 133, 83,\n  5, \"2020-01-01\", 160, 100,\n  5, \"2020-04-02\", 155, 95,\n  5, \"2020-07-03\", 148, 78\n)\n\nhead(bp_data)\n\n# A tibble: 6 × 4\n  pt_id visit_date   sbp   dbp\n  &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;\n1     1 2020-01-01   145    95\n2     1 2020-04-02   132    88\n3     1 2020-07-03   116    80\n4     2 2020-01-01   160   105\n5     2 2020-04-02   152    99\n6     2 2020-07-03   140    85\n\n\nIf we sorted these data by date alone, it would not make a lot of sense, as each patient has their own blood pressure journey. Instead, we want to group the data by patient, and calculate change over time. This requires making comparisons between rows (encounters) to see change over time.\n\n\n\n\n\n\n\n\nThis gives us change data for sbp and dbp, which is great. The lag(sbp) function uses the sbp value from one row above. If we wanted to compare sbp value in the current encounter to the value from 2 encounters ago, we could use lag(sbp, 2). Give this a try in the code chunk above. Run it to see the output (lots of NAs and a few values). If you want to compare the value in each encounter to the initial value for that patient, you group by patient first, then calculate the change as sbp_change_from1 = sbp - first(sbp). You can use first() and last() after grouping to identify the first and last encounter values for a particular variable. Try comparing the current value for dbp to the first or the last value in the code chunk above. Note that if you want to compare values to the next encounter, you would use the lead() function. Try this out in the code chunk below. Fill in the blank for the value that you want to compare.\n\n\n\n\n\n\n\n\nNote that the last encounter has NAs for change, as there is no lead (next) value for that patient. This is problematic if we want to plot the values (change in BP) over time.\nWe can fix this by piping the result into replace_na(list(sbp_change = 0, dbp_change = 0)). Give this a try in the code chunk above.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
+    ]
+  },
+  {
+    "objectID": "longitudinal.html#numbering-encounters",
+    "href": "longitudinal.html#numbering-encounters",
+    "title": "5  Longitudinal Data",
+    "section": "5.3 Numbering Encounters",
+    "text": "5.3 Numbering Encounters\nIt can often be very handy to number the encounters for each patient so that you have a useful counter to track over time in longitudinal comparisons. You can create this by grouping and adding row_numbers.\nYou can also keep track of the number of days since the index date with another variable, by subtracting the dates and converting this result to a numeric value.\n\n\n\n\n\n\n\n\nNote that the following functions can identify the intended row when you have grouped and arranged encounters in chronological order.\n\nfirst() [the first row]\nlag() [the previous row]\nlead() [the next row]\nlast() [the last row]",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
+    ]
+  },
+  {
+    "objectID": "longitudinal.html#now-to-plot",
+    "href": "longitudinal.html#now-to-plot",
+    "title": "5  Longitudinal Data",
+    "section": "5.4 Now to Plot",
+    "text": "5.4 Now to Plot\nWe can now take our change data and plot it with a line plot. Remember to use color or group within aes() so that you do not get line plot chaos.\n\n\n\n\n\n\n\n\nThis plot suggests a relatively steep improvement in SBP between visits 1 and 2, and slower improvement between visits 2 and 3.\nJust to see the outcome (what you will see if you forget to do this), remove the color = factor(pt_id) from ggplot, add on a libe of code for geom_point(),and run this code chunk again. When you see a plot like this result, it is because you forgot to group or color by patient. This is a very common mistake.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
+    ]
+  },
+  {
+    "objectID": "longitudinal.html#challenges-for-you",
+    "href": "longitudinal.html#challenges-for-you",
+    "title": "5  Longitudinal Data",
+    "section": "5.5 Challenges for You",
+    "text": "5.5 Challenges for You\nImprove the first draft of the plot from the code chunk above. Google to find out how to do each of these in ggplot, then implement these in the code chunk above.\n\nPut a proper title on this plot\nmake the y and x axis titles nicer with labs()\nChange the name of the legend to “Patient”\nRemove the 1.5 and 2.5 from the x axis\nUse a nicer theme than the default",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
     ]
   }
 ]

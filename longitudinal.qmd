@@ -1,0 +1,212 @@
+---
+title: "Longitudinal Data"
+
+format: live-html
+webr:
+  packages:
+    - dplyr
+    - tidyr
+    - palmerpenguins
+    - ggplot2
+---
+
+{{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
+
+## Longitudinal Data
+Health care data, especially in administrative databases, are often longitudinal. This means that each patient has multiple encounters, each corresponding to a different time point. For example, a patient may have a encounter for each visit, each procedure, and multiple telephone and portal encounters.<br>
+We often want to collect data from these encounters and summarize them in a way that is useful for analysis. For example, we may want to know how a patient responded after a change in therapy. If we can identify an index date when the change in therapy occurred, we can then collect data on measured outcomes at subsequent encounters.<br>
+For this example, we will focus on blood pressure data, after an imaginary intervention with a new antihypertensive therapy.
+
+## Data
+Here is a look at the data. Each patient will start a new antihypertensive on January 1, 2020, and we will follow them over several months. Look at the data below. Each row represents a patient encounter, with the patient ID, the date of the encounter, and the systolic and diastolic blood pressure measurements.
+
+```{r}
+options(tidyverse.quiet = TRUE)
+library(tidyverse)
+
+bp_data <- tibble::tribble(
+  ~pt_id, ~visit_date, ~sbp, ~dbp,
+  1, "2020-01-01", 145, 95,
+  1, "2020-04-02", 132, 88,
+  1, "2020-07-03", 116, 80,
+  2, "2020-01-01", 160, 105,
+  2, "2020-04-02", 152, 99,
+  2, "2020-07-03", 140, 85,
+  3, "2020-01-01", 162, 93,
+  3, "2020-04-02", 153, 88,
+  3, "2020-07-03", 139, 82,
+  4, "2020-01-01", 150, 95,
+  4, "2020-04-02", 143, 88,
+  4, "2020-07-03", 133, 83,
+  5, "2020-01-01", 160, 100,
+  5, "2020-04-02", 155, 95,
+  5, "2020-07-03", 148, 78
+)
+
+head(bp_data)
+```
+
+If we sorted these data by date alone, it would not make a lot of sense, as each patient has their own blood pressure journey. Instead, we want to group the data by patient, and calculate change over time. This requires making comparisons between rows (encounters) to see change over time.
+
+```{webr}
+bp_data <- tibble::tribble(
+  ~pt_id, ~visit_date, ~sbp, ~dbp,
+  1, "2020-01-01", 145, 95,
+  1, "2020-04-02", 132, 88,
+  1, "2020-07-03", 116, 80,
+  2, "2020-01-01", 160, 105,
+  2, "2020-04-02", 152, 99,
+  2, "2020-07-03", 140, 85,
+  3, "2020-01-01", 162, 93,
+  3, "2020-04-02", 153, 88,
+  3, "2020-07-03", 139, 82,
+  4, "2020-01-01", 150, 95,
+  4, "2020-04-02", 143, 88,
+  4, "2020-07-03", 133, 83,
+  5, "2020-01-01", 160, 100,
+  5, "2020-04-02", 155, 95,
+  5, "2020-07-03", 148, 78
+)
+bp_data %>%
+  group_by(pt_id) %>%
+  arrange(visit_date) |> 
+  mutate(
+    sbp_change = sbp - lag(sbp, 2),
+    dbp_change = dbp - lag(dbp, 2)
+  ) 
+```
+
+This gives us change data for sbp and dbp, which is great. The `lag(sbp)` function uses the sbp value from one row above. If we wanted to compare sbp value in the current encounter to the value from 2 encounters ago, we could use `lag(sbp, 2)`. Give this a try in the code chunk above. Run it to see the output (lots of NAs and a few values).<br>
+If you want to compare the value in each encounter to the initial value for that patient, you group by patient first, then calculate the change as `sbp_change_from1 = sbp - first(sbp)`. You can use `first()` and `last()` after grouping to identify the first and last encounter values for a particular variable. Try comparing the current value for dbp to the `first` or the `last` value in the code chunk above.<br>
+Note that if you want to compare values to the **next** encounter, you would use the `lead()` function. Try this out in the code chunk below. Fill in the blank for the value that you want to compare.
+
+```{webr}
+library(dplyr)
+library(tidyr)
+
+bp_data <- tibble::tribble(
+  ~pt_id, ~visit_date, ~sbp, ~dbp,
+  1, "2020-01-01", 145, 95,
+  1, "2020-04-02", 132, 88,
+  1, "2020-07-03", 116, 80,
+  2, "2020-01-01", 160, 105,
+  2, "2020-04-02", 152, 99,
+  2, "2020-07-03", 140, 85,
+  3, "2020-01-01", 162, 93,
+  3, "2020-04-02", 153, 88,
+  3, "2020-07-03", 139, 82,
+  4, "2020-01-01", 150, 95,
+  4, "2020-04-02", 143, 88,
+  4, "2020-07-03", 133, 83,
+  5, "2020-01-01", 160, 100,
+  5, "2020-04-02", 155, 95,
+  5, "2020-07-03", 148, 78
+)
+bp_data %>%
+  group_by(pt_id) %>%
+  arrange(visit_date) |> 
+  mutate(
+    sbp_change = lead(sbp) - sbp,
+    dbp_change = lead(___) - ___
+  ) 
+```
+
+Note that the last encounter has NAs for change, as there is no `lead` (next) value for that patient. This is problematic if we want to plot the values (change in BP) over time.
+
+We can fix this by piping the result into `replace_na(list(sbp_change = 0, dbp_change = 0))`. Give this a try in the code chunk above.
+
+## Numbering Encounters
+It can often be very handy to number the encounters for each patient so that you have a useful counter to track over time in longitudinal comparisons. You can create this by grouping and adding `row_numbers`.
+
+You can also keep track of the number of days since the index date with another variable, by subtracting the dates and converting this result to a numeric value.
+
+```{webr}
+library(dplyr)
+library(tidyr)
+
+bp_data <- tibble::tribble(
+  ~pt_id, ~visit_date, ~sbp, ~dbp,
+  1, "2020-01-01", 145, 95,
+  1, "2020-04-02", 132, 88,
+  1, "2020-07-03", 116, 80,
+  2, "2020-01-01", 160, 105,
+  2, "2020-04-02", 152, 99,
+  2, "2020-07-03", 140, 85,
+  3, "2020-01-01", 162, 93,
+  3, "2020-04-02", 153, 88,
+  3, "2020-07-03", 139, 82,
+  4, "2020-01-01", 150, 95,
+  4, "2020-04-02", 143, 88,
+  4, "2020-07-03", 133, 83,
+  5, "2020-01-01", 160, 100,
+  5, "2020-04-02", 155, 95,
+  5, "2020-07-03", 148, 78
+)
+
+bp_data %>%
+  group_by(pt_id) |>   
+  arrange(visit_date) |> 
+  mutate(encounter = row_number())  |> 
+  mutate(days = as.numeric(as.Date(visit_date) - as.Date(first(visit_date))))
+
+```
+
+Note that the following functions can identify the intended row when you have grouped and arranged encounters in chronological order.
+
+- `first()` [the first row]
+- `lag()`  [the previous row]
+- `lead()` [the next row]
+- `last()` [the last row]
+
+## Now to Plot
+ We can now take our change data and plot it with a line plot. Remember to use color or group within `aes()` so that you do not get line plot chaos.
+
+```{webr}
+library(dplyr)
+library(tidyr)
+
+bp_data <- tibble::tribble(
+  ~pt_id, ~visit_date, ~sbp, ~dbp,
+  1, "2020-01-01", 145, 95,
+  1, "2020-04-02", 132, 88,
+  1, "2020-07-03", 116, 80,
+  2, "2020-01-01", 160, 105,
+  2, "2020-04-02", 152, 99,
+  2, "2020-07-03", 140, 85,
+  3, "2020-01-01", 162, 93,
+  3, "2020-04-02", 153, 88,
+  3, "2020-07-03", 139, 82,
+  4, "2020-01-01", 150, 95,
+  4, "2020-04-02", 143, 88,
+  4, "2020-07-03", 133, 83,
+  5, "2020-01-01", 160, 100,
+  5, "2020-04-02", 155, 95,
+  5, "2020-07-03", 148, 78
+)
+
+bp_data %>%
+  group_by(pt_id) |>   
+  arrange(visit_date) |> 
+  mutate(
+    sbp_change = sbp - lag(sbp),
+    dbp_change = dbp - lag(dbp)
+  ) |> 
+  mutate(encounter = row_number())  |> 
+  replace_na(list(sbp_change=0, dbp_change=0)) |> 
+  ggplot(aes(x= encounter,y = sbp_change,
+             color = factor(pt_id))) +
+  geom_line() 
+```
+
+This plot suggests a relatively steep improvement in SBP between visits 1 and 2, and slower improvement between visits 2 and 3.
+
+Just to see the outcome (what you will see if you forget to do this), remove the `color = factor(pt_id)` from ggplot, add on a libe of code for `geom_point()`,and run this code chunk again. When you see a plot like this result, it is because you forgot to group or color by patient. This is a **very** common mistake.
+
+## Challenges for You
+Improve the first draft of the plot from the code chunk above. Google to find out how to do each of these in ggplot, then implement these in the code chunk above.
+
+1. Put a proper title on this plot
+2. make the y and x axis titles nicer with `labs()`
+3. Change the name of the legend to "Patient"
+4. Remove the 1.5 and 2.5 from the x axis
+5. Use a nicer theme than the default

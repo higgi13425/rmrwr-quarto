@@ -1,0 +1,149 @@
+---
+title: "Spaghetti Plots for Longitudinal Data"
+
+format: live-html
+webr:
+  packages:
+    - dplyr
+    - tidyr
+    - ggplot2
+---
+
+{{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
+
+## Longitudinal Data
+Health care data, especially in administrative databases, are often longitudinal. This means that each patient has multiple encounters, each corresponding to a different time point. For example, a patient may have a encounter for each visit, each procedure, and multiple telephone and portal encounters.<br>
+We often want to collect data from these encounters and summarize them in a way that is useful for analysis. We often want to track each patient over time, to see the natural history, or a response to a change in therapy.
+
+## The Spaghetti Plot
+The Spaghetti Plot is a visualization that shows change over multiple time points for longitudinal data, which lets you see change in each individual as a line. It gets the name because the result (with method = “lm”) looks a bit like you scattered uncooked spaghetti (straight lines) on the plot. It’s a great way to show changes in data over multiple time points, and there are multiple variants, including summary smoothed lines.
+
+Note that a bit of data wrangling needs to be done to produce the correct data format for geom_line(). You may need to pivot_longer() to get 1 row of data for each data point, and an id for each individual (multiple points making up a line. This id will often be a patient id (pat_id). We will read in some simulated data below for 4 time points. The variables are time point, the value, ses (2 categories), elderly (2 categories), and pat_id for 8 patients.
+
+The code below will illustrate the basic spaghetti plot.
+
+```{r}
+options(tidyverse.quiet = TRUE)
+library(tidyverse)
+
+dat <- tibble::tribble(~time, ~value, ~ses, ~elderly, ~pat_id, 0, 0, 1, 1, 1, 1, 3, 1, 1, 1, 2, 5, 1, 1, 1, 3, 8, 1, 1, 1, 0, 0, 2, 1, 2, 1, 4, 2, 1, 2, 2, 7, 2, 1, 2, 3, 9, 2, 1, 2, 0, 0, 1, 2, 3, 1, 5, 1, 2, 3, 2, 9, 1, 2, 3, 3, 11, 1, 2, 3, 0, 0, 2, 2, 4, 1, 5, 2, 2, 4, 2, 9, 2, 2, 4, 3, 15, 2, 2, 4, 0, 0, 1, 1, 5, 1, 5, 1, 1, 5, 2, 6, 1, 1, 5, 3, 9, 1, 1, 5, 0, 0, 2, 1, 6, 1, 5, 2, 1, 6, 2, 8, 2, 1, 6, 3, 13, 2, 1, 6, 0, 0, 1, 2, 7, 1, 4, 1, 2, 7, 2, 8, 1, 2, 7, 3, 14, 1, 2, 7, 0, 0, 2, 2, 8, 1, 6, 2, 2, 8, 2, 8, 2, 2, 8, 3, 16, 2, 2, 8)
+
+
+ggplot(dat, aes(
+  x = time, y = value,
+  group = factor(pat_id)
+)) +
+  geom_smooth(
+    formula = y ~ x, se = FALSE,
+    method = "lm"
+  ) +
+  xlab("Observation Time Point") +
+  ylab("Y")
+```
+
+
+
+As you can see, this plot looks a bit like spilled (uncooked) spaghetti, with a line for each patient. Each patient is the same (default) color. Note that it is critical to group by the patient id (group = factor(pat_id)) so that ggplot knows which points go together as a line. If you remove this bit of code for the group argument, you get chaos from geom_smooth() or geom_line(). We can also let each patient’s line follow their actual values, rather than a fitted line, with a few modifications. Run the example  below.
+
+```{webr}
+library(ggplot2)
+dat <- tibble::tribble(~time, ~value, ~ses, ~elderly, ~pat_id, 0, 0, 1, 1, 1, 1, 3, 1, 1, 1, 2, 5, 1, 1, 1, 3, 8, 1, 1, 1, 0, 0, 2, 1, 2, 1, 4, 2, 1, 2, 2, 7, 2, 1, 2, 3, 9, 2, 1, 2, 0, 0, 1, 2, 3, 1, 5, 1, 2, 3, 2, 9, 1, 2, 3, 3, 11, 1, 2, 3, 0, 0, 2, 2, 4, 1, 5, 2, 2, 4, 2, 9, 2, 2, 4, 3, 15, 2, 2, 4, 0, 0, 1, 1, 5, 1, 5, 1, 1, 5, 2, 6, 1, 1, 5, 3, 9, 1, 1, 5, 0, 0, 2, 1, 6, 1, 5, 2, 1, 6, 2, 8, 2, 1, 6, 3, 13, 2, 1, 6, 0, 0, 1, 2, 7, 1, 4, 1, 2, 7, 2, 8, 1, 2, 7, 3, 14, 1, 2, 7, 0, 0, 2, 2, 8, 1, 6, 2, 2, 8, 2, 8, 2, 2, 8, 3, 16, 2, 2, 8)
+
+ggplot(dat, aes(x = time, y = value, 
+  group = factor(pat_id))) +
+  geom_point() +
+  geom_line() +
+  xlab("Observation Time Point") +
+  ylab("Y") 
+```
+
+Now each patient is represented by a line (and points) with more detail than a fitted straight line.
+
+
+We can also chose to color these lines in two classes by ses (SocioEconomic Status) by setting color = factor(ses). We can make the legend neater by putting it inside the plot boundaries with theme (legend.position), and use the x and y range from 0 to 1 to position it. Google how to do these two things, and try to implement them in the code chunk above.
+
+You can see the solution below if you get stuck.
+
+```{r, warning=FALSE}
+ggplot(dat, aes(
+  x = time, y = value,
+  group = factor(pat_id), color = factor(ses)
+)) +
+  geom_point() +
+  geom_line() +
+  theme(legend.position = c(0.8, 0.2)) +
+  xlab("Observation Time Point") +
+  ylab("Y")
+```
+
+If we want to summarize the overall trend, we can use a geom_smooth() with the default loess smoothing. We set the color to “black”, rather than the color of either SES group. In order to get a single summary curve, we need to turn off the grouping with group = NULL. Note the loess smoothing produces a curve in the code below.
+
+```{r, warning=FALSE}
+ggplot(dat, aes(
+  x = time, y = value,
+  group = factor(pat_id), color = factor(ses)
+)) +
+  geom_point() +
+  geom_line() +
+  theme(legend.position = c(0.8, 0.2)) +
+  xlab("Observation Time Point") +
+  ylab("Y") +
+  geom_smooth(formula = y ~ x, se = FALSE, linewidth = 2, method = "loess", color = "black", aes(group = NULL))
+```
+
+Now a challenge for you - how would you make 2 distinct summary curves for the low and high SES groups, each in the appropriate color, but in linewidth = 4?
+
+Try to modify the code chunk below to achieve this.
+```{webr}
+#| warning: false
+library(ggplot2)
+
+dat <- tibble::tribble(~time, ~value, ~ses, ~elderly, ~pat_id, 0, 0, 1, 1, 1, 1, 3, 1, 1, 1, 2, 5, 1, 1, 1, 3, 8, 1, 1, 1, 0, 0, 2, 1, 2, 1, 4, 2, 1, 2, 2, 7, 2, 1, 2, 3, 9, 2, 1, 2, 0, 0, 1, 2, 3, 1, 5, 1, 2, 3, 2, 9, 1, 2, 3, 3, 11, 1, 2, 3, 0, 0, 2, 2, 4, 1, 5, 2, 2, 4, 2, 9, 2, 2, 4, 3, 15, 2, 2, 4, 0, 0, 1, 1, 5, 1, 5, 1, 1, 5, 2, 6, 1, 1, 5, 3, 9, 1, 1, 5, 0, 0, 2, 1, 6, 1, 5, 2, 1, 6, 2, 8, 2, 1, 6, 3, 13, 2, 1, 6, 0, 0, 1, 2, 7, 1, 4, 1, 2, 7, 2, 8, 1, 2, 7, 3, 14, 1, 2, 7, 0, 0, 2, 2, 8, 1, 6, 2, 2, 8, 2, 8, 2, 2, 8, 3, 16, 2, 2, 8)
+
+ggplot(dat, aes(x = time, y = value, 
+  group = factor(pat_id), color = factor(ses))) +
+  geom_point() +
+  geom_line() +
+  theme(legend.position = c(0.8, 0.2)) + 
+  xlab("Observation Time Point") +
+  ylab("Y") +
+  geom_smooth(se=FALSE, lindewidth =__, method = "loess",   aes(group = NULL, color = factor(__)))
+```
+
+Now a challenge - facet this plot into one facet for the young, and one facet for the elderly (using the variable 'elderly').
+
+
+## More Challenges for You
+```{webr}
+
+library(ggplot2)
+
+dat <- tibble::tribble(~ patid, ~week, ~crp, ~fcp, ~flare, ~dz_type, 1,1,0.7,191,1,"uc", 1,3,1.1,302,1,"uc", 1,8,1.5,507,1,"uc", 
+2,1,0.8,214,1,"cd", 2,3,1.2,412,1,"cd", 2,8,1.6,647,1,"cd",  
+       3,1,0.7,137,0,"uc", 3,3,0.5,101,0,"uc", 3,8,0.4,58,0,"uc", 
+      4,1,0.5,112,0,"cd", 4,3,0.3,81,0,"cd", 4,8,0.1,44,0,"cd",
+      5,1,0.6,119,0,"uc", 5,3,0.4,87,0,"uc", 5,8,0.3,57,0,"uc", 
+     6,1,0.7,216,0,"cd", 6,3,0.5,161,0,"cd", 6,8,0.3,92,0,"cd", 
+       7,1,0.9,267,1,"uc", 7,3,1.1,412,1,"uc", 7,8,1.9,692,1,"uc",
+  8,1,0.7,212,1,"cd",  8,3,1.1,342,1,"cd", 8,8,1.6,517,1,"cd", 
+  9,1,0.9,197,0,"uc", 9,3,0.6,134,0,"uc", 9,8,0.4,86,0,"uc", 
+10,1,0.5,143,0,"cd", 10,3,0.4,101,0,"cd", 10,8,0.3,64,0,"cd", 
+11,1,0.7,217,0,"uc", 11,3,0.4,153,0,"uc", 11,8,0.3,51,0,"uc")
+
+
+ggplot(dat, aes(x = week, y = crp, 
+                group = factor(patid),
+                color= factor(patid))) +
+  geom_smooth(formula = y ~ x, se = FALSE, 
+              method = "lm") +
+  xlab("Week") +
+  ylab("CRP") 
+```
+
+
+Improve the first draft of the plot from the code chunk above. Google to find out how to do each of these challenges in ggplot, then implement these in the code chunk above.
+
+1. See the initial plot above for CRP with smooth lines for each patient, then try to make something similar for FCP.
+2. Now plot the CRP values, and change the grouping to patid without colors, and use geom_point() and geom_line() rather than geom_smooth to see the CRP trends in black.
+3. Now plot the CRP values, and add to the aes, color = factor(dz_type) OR color= factor(flare) to group = factor(patid)
+4. Now plot the FCP values, and add the geom_smooth with group = NULL and color = factor(flare). Also facet_grid by dz_type, and see if you can improve the default legend title and labels (might need to google these).

@@ -96,7 +96,7 @@
     "section": "",
     "text": "5.1 Longitudinal Data\nHealth care data, especially in administrative databases, are often longitudinal. This means that each patient has multiple encounters, each corresponding to a different time point. For example, a patient may have a encounter for each visit, each procedure, and multiple telephone and portal encounters. We often want to collect data from these encounters and summarize them in a way that is useful for analysis. For example, we may want to know how a patient responded after a change in therapy. If we can identify an index date when the change in therapy occurred, we can then collect data on measured outcomes at subsequent encounters. For this example, we will focus on blood pressure data, after an imaginary intervention with a new antihypertensive therapy.",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Spaghetti Plots for Longitudinal Data</span>"
     ]
   },
   {
@@ -106,7 +106,7 @@
     "section": "5.2 Data",
     "text": "5.2 Data\nHere is a look at the data. Each patient will start a new antihypertensive on January 1, 2020, and we will follow them over several months. Look at the data below. Each row represents a patient encounter, with the patient ID, the date of the encounter, and the systolic and diastolic blood pressure measurements.\n\noptions(tidyverse.quiet = TRUE)\nlibrary(tidyverse)\n\nbp_data &lt;- tibble::tribble(\n  ~pt_id, ~visit_date, ~sbp, ~dbp,\n  1, \"2020-01-01\", 145, 95,\n  1, \"2020-04-02\", 132, 88,\n  1, \"2020-07-03\", 116, 80,\n  2, \"2020-01-01\", 160, 105,\n  2, \"2020-04-02\", 152, 99,\n  2, \"2020-07-03\", 140, 85,\n  3, \"2020-01-01\", 162, 93,\n  3, \"2020-04-02\", 153, 88,\n  3, \"2020-07-03\", 139, 82,\n  4, \"2020-01-01\", 150, 95,\n  4, \"2020-04-02\", 143, 88,\n  4, \"2020-07-03\", 133, 83,\n  5, \"2020-01-01\", 160, 100,\n  5, \"2020-04-02\", 155, 95,\n  5, \"2020-07-03\", 148, 78\n)\n\nhead(bp_data)\n\n# A tibble: 6 × 4\n  pt_id visit_date   sbp   dbp\n  &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;\n1     1 2020-01-01   145    95\n2     1 2020-04-02   132    88\n3     1 2020-07-03   116    80\n4     2 2020-01-01   160   105\n5     2 2020-04-02   152    99\n6     2 2020-07-03   140    85\n\n\nIf we sorted these data by date alone, it would not make a lot of sense, as each patient has their own blood pressure journey. Instead, we want to group the data by patient, and calculate change over time. This requires making comparisons between rows (encounters) to see change over time.\n\n\n\n\n\n\n\n\nThis gives us change data for sbp and dbp, which is great. The lag(sbp) function uses the sbp value from one row above. If we wanted to compare sbp value in the current encounter to the value from 2 encounters ago, we could use lag(sbp, 2). Give this a try in the code chunk above. Run it to see the output (lots of NAs and a few values). If you want to compare the value in each encounter to the initial value for that patient, you group by patient first, then calculate the change as sbp_change_from1 = sbp - first(sbp). You can use first() and last() after grouping to identify the first and last encounter values for a particular variable. Try comparing the current value for dbp to the first or the last value in the code chunk above. Note that if you want to compare values to the next encounter, you would use the lead() function. Try this out in the code chunk below. Fill in the blank for the value that you want to compare.\n\n\n\n\n\n\n\n\nNote that the last encounter has NAs for change, as there is no lead (next) value for that patient. This is problematic if we want to plot the values (change in BP) over time.\nWe can fix this by piping the result into replace_na(list(sbp_change = 0, dbp_change = 0)). Give this a try in the code chunk above.",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Spaghetti Plots for Longitudinal Data</span>"
     ]
   },
   {
@@ -116,7 +116,7 @@
     "section": "5.3 Numbering Encounters",
     "text": "5.3 Numbering Encounters\nIt can often be very handy to number the encounters for each patient so that you have a useful counter to track over time in longitudinal comparisons. You can create this by grouping and adding row_numbers.\nYou can also keep track of the number of days since the index date with another variable, by subtracting the dates and converting this result to a numeric value.\n\n\n\n\n\n\n\n\nNote that the following functions can identify the intended row when you have grouped and arranged encounters in chronological order.\n\nfirst() [the first row]\nlag() [the previous row]\nlead() [the next row]\nlast() [the last row]",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Spaghetti Plots for Longitudinal Data</span>"
     ]
   },
   {
@@ -126,7 +126,7 @@
     "section": "5.4 Now to Plot",
     "text": "5.4 Now to Plot\nWe can now take our change data and plot it with a line plot. Remember to use color or group within aes() so that you do not get line plot chaos.\n\n\n\n\n\n\n\n\nThis plot suggests a relatively steep improvement in SBP between visits 1 and 2, and slower improvement between visits 2 and 3.\nJust to see the outcome (what you will see if you forget to do this), remove the color = factor(pt_id) from ggplot, add on a libe of code for geom_point(),and run this code chunk again. When you see a plot like this result, it is because you forgot to group or color by patient. This is a very common mistake.",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Spaghetti Plots for Longitudinal Data</span>"
     ]
   },
   {
@@ -136,7 +136,37 @@
     "section": "5.5 Challenges for You",
     "text": "5.5 Challenges for You\nImprove the first draft of the plot from the code chunk above. Google to find out how to do each of these in ggplot, then implement these in the code chunk above.\n\nPut a proper title on this plot\nmake the y and x axis titles nicer with labs()\nChange the name of the legend to “Patient”\nRemove the 1.5 and 2.5 from the x axis\nUse a nicer theme than the default",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Spaghetti Plots for Longitudinal Data</span>"
+    ]
+  },
+  {
+    "objectID": "spaghetti.html",
+    "href": "spaghetti.html",
+    "title": "6  Spaghetti Plots for Longitudinal Data",
+    "section": "",
+    "text": "6.1 Longitudinal Data\nHealth care data, especially in administrative databases, are often longitudinal. This means that each patient has multiple encounters, each corresponding to a different time point. For example, a patient may have a encounter for each visit, each procedure, and multiple telephone and portal encounters. We often want to collect data from these encounters and summarize them in a way that is useful for analysis. We often want to track each patient over time, to see the natural history, or a response to a change in therapy.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Spaghetti Plots for Longitudinal Data</span>"
+    ]
+  },
+  {
+    "objectID": "spaghetti.html#the-spaghetti-plot",
+    "href": "spaghetti.html#the-spaghetti-plot",
+    "title": "6  Spaghetti Plots for Longitudinal Data",
+    "section": "6.2 The Spaghetti Plot",
+    "text": "6.2 The Spaghetti Plot\nThe Spaghetti Plot is a visualization that shows change over multiple time points for longitudinal data, which lets you see change in each individual as a line. It gets the name because the result (with method = “lm”) looks a bit like you scattered uncooked spaghetti (straight lines) on the plot. It’s a great way to show changes in data over multiple time points, and there are multiple variants, including summary smoothed lines.\nNote that a bit of data wrangling needs to be done to produce the correct data format for geom_line(). You may need to pivot_longer() to get 1 row of data for each data point, and an id for each individual (multiple points making up a line. This id will often be a patient id (pat_id). We will read in some simulated data below for 4 time points. The variables are time point, the value, ses (2 categories), elderly (2 categories), and pat_id for 8 patients.\nThe code below will illustrate the basic spaghetti plot.\n\noptions(tidyverse.quiet = TRUE)\nlibrary(tidyverse)\n\ndat &lt;- tibble::tribble(~time, ~value, ~ses, ~elderly, ~pat_id, 0, 0, 1, 1, 1, 1, 3, 1, 1, 1, 2, 5, 1, 1, 1, 3, 8, 1, 1, 1, 0, 0, 2, 1, 2, 1, 4, 2, 1, 2, 2, 7, 2, 1, 2, 3, 9, 2, 1, 2, 0, 0, 1, 2, 3, 1, 5, 1, 2, 3, 2, 9, 1, 2, 3, 3, 11, 1, 2, 3, 0, 0, 2, 2, 4, 1, 5, 2, 2, 4, 2, 9, 2, 2, 4, 3, 15, 2, 2, 4, 0, 0, 1, 1, 5, 1, 5, 1, 1, 5, 2, 6, 1, 1, 5, 3, 9, 1, 1, 5, 0, 0, 2, 1, 6, 1, 5, 2, 1, 6, 2, 8, 2, 1, 6, 3, 13, 2, 1, 6, 0, 0, 1, 2, 7, 1, 4, 1, 2, 7, 2, 8, 1, 2, 7, 3, 14, 1, 2, 7, 0, 0, 2, 2, 8, 1, 6, 2, 2, 8, 2, 8, 2, 2, 8, 3, 16, 2, 2, 8)\n\n\nggplot(dat, aes(\n  x = time, y = value,\n  group = factor(pat_id)\n)) +\n  geom_smooth(\n    formula = y ~ x, se = FALSE,\n    method = \"lm\"\n  ) +\n  xlab(\"Observation Time Point\") +\n  ylab(\"Y\")\n\n\n\n\n\n\n\n\nAs you can see, this plot looks a bit like spilled (uncooked) spaghetti, with a line for each patient. Each patient is the same (default) color. Note that it is critical to group by the patient id (group = factor(pat_id)) so that ggplot knows which points go together as a line. If you remove this bit of code for the group argument, you get chaos from geom_smooth() or geom_line(). We can also let each patient’s line follow their actual values, rather than a fitted line, with a few modifications. Run the example below.\n\n\n\n\n\n\n\n\nNow each patient is represented by a line (and points) with more detail than a fitted straight line.\nWe can also chose to color these lines in two classes by ses (SocioEconomic Status) by setting color = factor(ses). We can make the legend neater by putting it inside the plot boundaries with theme (legend.position), and use the x and y range from 0 to 1 to position it. Google how to do these two things, and try to implement them in the code chunk above.\nYou can see the solution below if you get stuck.\n\nggplot(dat, aes(\n  x = time, y = value,\n  group = factor(pat_id), color = factor(ses)\n)) +\n  geom_point() +\n  geom_line() +\n  theme(legend.position = c(0.8, 0.2)) +\n  xlab(\"Observation Time Point\") +\n  ylab(\"Y\")\n\n\n\n\n\n\n\n\nIf we want to summarize the overall trend, we can use a geom_smooth() with the default loess smoothing. We set the color to “black”, rather than the color of either SES group. In order to get a single summary curve, we need to turn off the grouping with group = NULL. Note the loess smoothing produces a curve in the code below.\n\nggplot(dat, aes(\n  x = time, y = value,\n  group = factor(pat_id), color = factor(ses)\n)) +\n  geom_point() +\n  geom_line() +\n  theme(legend.position = c(0.8, 0.2)) +\n  xlab(\"Observation Time Point\") +\n  ylab(\"Y\") +\n  geom_smooth(formula = y ~ x, se = FALSE, linewidth = 2, method = \"loess\", color = \"black\", aes(group = NULL))\n\n\n\n\n\n\n\n\nNow a challenge for you - how would you make 2 distinct summary curves for the low and high SES groups, each in the appropriate color, but in linewidth = 4?\nTry to modify the code chunk below to achieve this.\n\n\n\n\n\n\n\n\nNow a challenge - facet this plot into one facet for the young, and one facet for the elderly.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Spaghetti Plots for Longitudinal Data</span>"
+    ]
+  },
+  {
+    "objectID": "spaghetti.html#more-challenges-for-you",
+    "href": "spaghetti.html#more-challenges-for-you",
+    "title": "6  Spaghetti Plots for Longitudinal Data",
+    "section": "6.3 More Challenges for You",
+    "text": "6.3 More Challenges for You\n\n\n\n\n\n\n\n\nImprove the first draft of the plot from the code chunk above. Google to find out how to do each of these in ggplot, then implement these in the code chunk above.\n\nSee the initial plot above for CRP with smooth lines for each patient, then try it for FCP.\nNow plot the CRP values, and change the grouping to patid without colors, and use geom_point() and geom_line() rather than geom_smooth to see the CRP trends in black.\nNow plot the CRP values, and add to the aes, color = factor(dz_type) OR color= factor(flare) to group = factor(patid)\nNow plot the FCP values, and add the geom_smooth with group = NULL and color = factor(flare). Also facet_grid by dz_type, and see if you can improve the default legend title and labels (might need to google these).",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Spaghetti Plots for Longitudinal Data</span>"
     ]
   }
 ]

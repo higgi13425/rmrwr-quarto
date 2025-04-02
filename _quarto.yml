@@ -12,6 +12,7 @@ book:
     - inset_table.qmd
     - functions.qmd
     - longitudinal.qmd
+    - spaghetti.qmd
     - references.qmd
 
 bibliography: references.bib

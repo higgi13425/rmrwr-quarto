@@ -96,7 +96,7 @@
     "section": "",
     "text": "5.1 Longitudinal Data\nHealth care data, especially in administrative databases, are often longitudinal. This means that each patient has multiple encounters, each corresponding to a different time point. For example, a patient may have a encounter for each visit, each procedure, and multiple telephone and portal encounters. We often want to collect data from these encounters and summarize them in a way that is useful for analysis. For example, we may want to know how a patient responded after a change in therapy. If we can identify an index date when the change in therapy occurred, we can then collect data on measured outcomes at subsequent encounters. For this example, we will focus on blood pressure data, after an imaginary intervention with a new antihypertensive therapy.",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Spaghetti Plots for Longitudinal Data</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
     ]
   },
   {
@@ -106,7 +106,7 @@
     "section": "5.2 Data",
     "text": "5.2 Data\nHere is a look at the data. Each patient will start a new antihypertensive on January 1, 2020, and we will follow them over several months. Look at the data below. Each row represents a patient encounter, with the patient ID, the date of the encounter, and the systolic and diastolic blood pressure measurements.\n\noptions(tidyverse.quiet = TRUE)\nlibrary(tidyverse)\n\nbp_data &lt;- tibble::tribble(\n  ~pt_id, ~visit_date, ~sbp, ~dbp,\n  1, \"2020-01-01\", 145, 95,\n  1, \"2020-04-02\", 132, 88,\n  1, \"2020-07-03\", 116, 80,\n  2, \"2020-01-01\", 160, 105,\n  2, \"2020-04-02\", 152, 99,\n  2, \"2020-07-03\", 140, 85,\n  3, \"2020-01-01\", 162, 93,\n  3, \"2020-04-02\", 153, 88,\n  3, \"2020-07-03\", 139, 82,\n  4, \"2020-01-01\", 150, 95,\n  4, \"2020-04-02\", 143, 88,\n  4, \"2020-07-03\", 133, 83,\n  5, \"2020-01-01\", 160, 100,\n  5, \"2020-04-02\", 155, 95,\n  5, \"2020-07-03\", 148, 78\n)\n\nhead(bp_data)\n\n# A tibble: 6 × 4\n  pt_id visit_date   sbp   dbp\n  &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;\n1     1 2020-01-01   145    95\n2     1 2020-04-02   132    88\n3     1 2020-07-03   116    80\n4     2 2020-01-01   160   105\n5     2 2020-04-02   152    99\n6     2 2020-07-03   140    85\n\n\nIf we sorted these data by date alone, it would not make a lot of sense, as each patient has their own blood pressure journey. Instead, we want to group the data by patient, and calculate change over time. This requires making comparisons between rows (encounters) to see change over time.\n\n\n\n\n\n\n\n\nThis gives us change data for sbp and dbp, which is great. The lag(sbp) function uses the sbp value from one row above. If we wanted to compare sbp value in the current encounter to the value from 2 encounters ago, we could use lag(sbp, 2). Give this a try in the code chunk above. Run it to see the output (lots of NAs and a few values). If you want to compare the value in each encounter to the initial value for that patient, you group by patient first, then calculate the change as sbp_change_from1 = sbp - first(sbp). You can use first() and last() after grouping to identify the first and last encounter values for a particular variable. Try comparing the current value for dbp to the first or the last value in the code chunk above. Note that if you want to compare values to the next encounter, you would use the lead() function. Try this out in the code chunk below. Fill in the blank for the value that you want to compare.\n\n\n\n\n\n\n\n\nNote that the last encounter has NAs for change, as there is no lead (next) value for that patient. This is problematic if we want to plot the values (change in BP) over time.\nWe can fix this by piping the result into replace_na(list(sbp_change = 0, dbp_change = 0)). Give this a try in the code chunk above.",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Spaghetti Plots for Longitudinal Data</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
     ]
   },
   {
@@ -116,7 +116,7 @@
     "section": "5.3 Numbering Encounters",
     "text": "5.3 Numbering Encounters\nIt can often be very handy to number the encounters for each patient so that you have a useful counter to track over time in longitudinal comparisons. You can create this by grouping and adding row_numbers.\nYou can also keep track of the number of days since the index date with another variable, by subtracting the dates and converting this result to a numeric value.\n\n\n\n\n\n\n\n\nNote that the following functions can identify the intended row when you have grouped and arranged encounters in chronological order.\n\nfirst() [the first row]\nlag() [the previous row]\nlead() [the next row]\nlast() [the last row]",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Spaghetti Plots for Longitudinal Data</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
     ]
   },
   {
@@ -126,7 +126,7 @@
     "section": "5.4 Now to Plot",
     "text": "5.4 Now to Plot\nWe can now take our change data and plot it with a line plot. Remember to use color or group within aes() so that you do not get line plot chaos.\n\n\n\n\n\n\n\n\nThis plot suggests a relatively steep improvement in SBP between visits 1 and 2, and slower improvement between visits 2 and 3.\nJust to see the outcome (what you will see if you forget to do this), remove the color = factor(pt_id) from ggplot, add on a libe of code for geom_point(),and run this code chunk again. When you see a plot like this result, it is because you forgot to group or color by patient. This is a very common mistake.",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Spaghetti Plots for Longitudinal Data</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
     ]
   },
   {
@@ -136,7 +136,7 @@
     "section": "5.5 Challenges for You",
     "text": "5.5 Challenges for You\nImprove the first draft of the plot from the code chunk above. Google to find out how to do each of these in ggplot, then implement these in the code chunk above.\n\nPut a proper title on this plot\nmake the y and x axis titles nicer with labs()\nChange the name of the legend to “Patient”\nRemove the 1.5 and 2.5 from the x axis\nUse a nicer theme than the default",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Spaghetti Plots for Longitudinal Data</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Longitudinal Data</span>"
     ]
   },
   {

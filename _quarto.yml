@@ -13,6 +13,7 @@ book:
     - functions.qmd
     - longitudinal.qmd
     - spaghetti.qmd
+    - swimmer.qmd
     - references.qmd
 
 bibliography: references.bib
